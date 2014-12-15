@@ -1,6 +1,7 @@
 package com.doleestudio.tycheapp;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -8,11 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.doleestudio.tycheapp.dummy.DummyContent;
+
+import java.util.ArrayList;
 
 /**
  * A fragment representing a list of Items.
@@ -73,9 +75,7 @@ public class TicketFragment extends Fragment implements AbsListView.OnItemClickL
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        // TODO: Change Adapter to display your content
-        mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS);
+        new TicketDownload().execute();
     }
 
     @Override
@@ -148,4 +148,30 @@ public class TicketFragment extends Fragment implements AbsListView.OnItemClickL
         public void onFragmentInteraction(String id);
     }
 
+    private class TicketDownload extends AsyncTask<Void, Void, ArrayList<Ticket>> {
+
+        @Override
+        protected ArrayList<Ticket> doInBackground(Void... params) {
+            NetworkConnector connector = new NetworkConnector();
+            ArrayList<Ticket> tickets = null;
+
+            try {
+                tickets = connector.fetchJson("http://10.0.2.2:3000/lineups/");
+            } catch (Exception e) {
+
+            }
+
+            return tickets;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Ticket> tickets) {
+            mAdapter = new TicketAdapter(getActivity(), R.layout.fragment_ticket_list, tickets);
+            notifyDataChanged();
+        }
+
+        private void notifyDataChanged() {
+            mListView.setAdapter(mAdapter);
+        }
+    }
 }

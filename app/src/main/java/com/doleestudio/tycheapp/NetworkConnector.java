@@ -87,7 +87,6 @@ public class NetworkConnector {
 
         conn.connect();
 
-
         return conn;
     }
 

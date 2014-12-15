@@ -16,6 +16,7 @@ public class Ticket {
     private static final String NUMBER = "wait_number";
     private static final String WAIT_ORDER = "wait_ahead_count";
     private static final String REG_TIME = "reg_time";
+    private static final String UTC_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     private long storeId;
     private String storeName;
@@ -26,11 +27,11 @@ public class Ticket {
     private Ticket() {
     }
 
-    public static Ticket instanceOf(JSONObject jasonObj) {
+    public static Ticket instanceOf(JSONObject jsonObj) {
         Ticket ticket = null;
 
         try {
-            ticket = readTicketFromJason(jasonObj);
+            ticket = readTicketFromJsonObj(jsonObj);
         } catch (Exception e) {
 
         }
@@ -38,7 +39,7 @@ public class Ticket {
         return ticket;
     }
 
-    private static Ticket readTicketFromJason(JSONObject jsonObj) throws JSONException, ParseException {
+    private static Ticket readTicketFromJsonObj(JSONObject jsonObj) throws JSONException, ParseException {
         Ticket ticket = new Ticket();
 
         ticket.storeId = jsonObj.getLong(Ticket.STORE_ID);
@@ -52,7 +53,7 @@ public class Ticket {
     }
 
     private static Date convertFromJasonDateToDate(JSONObject jsonObj) throws JSONException, ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        SimpleDateFormat formatter = new SimpleDateFormat(Ticket.UTC_FORMAT);
 
         String jsonDateText = jsonObj.getString(REG_TIME);
         return formatter.parse(jsonDateText);
@@ -60,6 +61,10 @@ public class Ticket {
 
     public long getStoreId() {
         return storeId;
+    }
+
+    public String getStringStoreId() {
+        return String.valueOf(storeId);
     }
 
     public String getStoreName() {
@@ -70,11 +75,23 @@ public class Ticket {
         return number;
     }
 
+    public String getStringNumber() {
+        return String.valueOf(number);
+    }
+
     public long getWaitOrder() {
         return waitOrder;
     }
 
+    public String getStringWaitOrder() {
+        return String.valueOf(waitOrder);
+    }
+
     public Date getRegTime() {
         return regTime;
+    }
+
+    public String getStringRegTime() {
+        return regTime.toString();
     }
 }
