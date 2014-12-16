@@ -11,6 +11,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.doleestudio.tycheapp.dummy.DummyContent;
 
@@ -158,10 +159,17 @@ public class TicketFragment extends Fragment implements AbsListView.OnItemClickL
             try {
                 tickets = connector.fetchJson("http://10.0.2.2:3000/lineups/");
             } catch (Exception e) {
-
+                cancel(true);
             }
 
             return tickets;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            if (!NetworkConnector.isConnected(getActivity())) {
+                showErrorToast("네트워크에 연결되지 않았습니다. 네트워크에 연결해 주십시오.");
+            }
         }
 
         @Override
@@ -170,8 +178,20 @@ public class TicketFragment extends Fragment implements AbsListView.OnItemClickL
             notifyDataChanged();
         }
 
+        @Override
+        protected void onCancelled() {
+            showErrorToast("서버에 이상이 발생했습니다. 앱을 다시 실행해 주시고 그래도 이상이 있을 경우엔 회사 고객지원 센터에 연락주시기 바랍니다.");
+        }
+
         private void notifyDataChanged() {
             mListView.setAdapter(mAdapter);
+        }
+
+        private void showErrorToast(String msg) {
+            int duration = Toast.LENGTH_LONG;
+
+            Toast toast = Toast.makeText(getActivity(), msg, duration);
+            toast.show();
         }
     }
 }

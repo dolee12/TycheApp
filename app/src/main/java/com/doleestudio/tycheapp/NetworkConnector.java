@@ -24,6 +24,12 @@ public class NetworkConnector {
 
     private static final int BUFFER_SIZE = 1024;
 
+    public static boolean isConnected(Context context) {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
+    }
 
     public ArrayList<Ticket> fetchJson(String urlText) throws MalformedURLException, IOException, NetworkConnectorException, JSONException {
 
@@ -74,7 +80,6 @@ public class NetworkConnector {
         return builder.toString();
     }
 
-
     private HttpURLConnection connect(String urlText) throws MalformedURLException, IOException {
         URL url = new URL(urlText);
 
@@ -88,13 +93,6 @@ public class NetworkConnector {
         conn.connect();
 
         return conn;
-    }
-
-    public boolean isConnected(Context context) {
-        ConnectivityManager connMgr = (ConnectivityManager)
-                context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnected();
     }
 
     class NetworkConnectorException extends Exception {
