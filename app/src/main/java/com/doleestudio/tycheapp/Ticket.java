@@ -24,35 +24,23 @@ public class Ticket {
     private long waitOrder;
     private Date regTime;
 
-    private Ticket() {
+    public Ticket(JSONObject jsonObj) {
+        initializeFromJson(jsonObj);
     }
 
-    public static Ticket instanceOf(JSONObject jsonObj) {
-        Ticket ticket = null;
-
+    private final void initializeFromJson(JSONObject jsonObj) {
         try {
-            ticket = readTicketFromJsonObj(jsonObj);
+            storeId = jsonObj.getLong(Ticket.STORE_ID);
+            storeName = jsonObj.getString(Ticket.STORE_NAME);
+            number = jsonObj.getLong(NUMBER);
+            waitOrder = jsonObj.getLong(WAIT_ORDER);
+            regTime = convertFromJasonDateToDate(jsonObj);
         } catch (Exception e) {
 
         }
-
-        return ticket;
     }
 
-    private static Ticket readTicketFromJsonObj(JSONObject jsonObj) throws JSONException, ParseException {
-        Ticket ticket = new Ticket();
-
-        ticket.storeId = jsonObj.getLong(Ticket.STORE_ID);
-        ticket.storeName = jsonObj.getString(Ticket.STORE_NAME);
-        ticket.number = jsonObj.getLong(NUMBER);
-        ticket.waitOrder = jsonObj.getLong(WAIT_ORDER);
-
-        ticket.regTime = convertFromJasonDateToDate(jsonObj);
-
-        return ticket;
-    }
-
-    private static Date convertFromJasonDateToDate(JSONObject jsonObj) throws JSONException, ParseException {
+    private Date convertFromJasonDateToDate(JSONObject jsonObj) throws JSONException, ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat(Ticket.UTC_FORMAT);
 
         String jsonDateText = jsonObj.getString(REG_TIME);

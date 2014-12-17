@@ -5,42 +5,35 @@ import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
 public class StoreActivity extends Activity implements OnFragmentInteractionListener {
+    private String query;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_store);
 
+        Intent intent = getIntent();
+        handleSearchIntent(intent);
+
         if (savedInstanceState == null) {
             openStoreFragment();
         }
-
-        Intent intent = getIntent();
-        handleSearchIntent(intent);
     }
 
     private void handleSearchIntent(Intent intent) {
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            showResults(query);
+            query = intent.getStringExtra(SearchManager.QUERY);
         }
     }
 
-    private void showResults(String query) {
-        // TODO: Query your data set and show results
-
-        Log.d("Tyche", "showResults");
-    }
-
     private void openStoreFragment() {
-        StoreFragment storeFragment = StoreFragment.newInstance("Item 1", "Item 2");
+        StoreFragment storeFragment = StoreFragment.newInstance(query);
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 

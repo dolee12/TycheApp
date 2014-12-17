@@ -9,13 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.doleestudio.tycheapp.dummy.DummyContent;
-
-import java.util.ArrayList;
 
 /**
  * A fragment representing a list of Items.
@@ -48,7 +45,7 @@ public class TicketFragment extends Fragment implements AbsListView.OnItemClickL
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private ListAdapter mAdapter;
+    private TicketAdapter mAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -76,6 +73,8 @@ public class TicketFragment extends Fragment implements AbsListView.OnItemClickL
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        mAdapter = new TicketAdapter(getActivity(), R.layout.fragment_ticket_list);
+
         new TicketDownload().execute();
     }
 
@@ -86,7 +85,7 @@ public class TicketFragment extends Fragment implements AbsListView.OnItemClickL
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
-        ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
+        // mListView.setAdapter(mAdapter);
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
@@ -134,20 +133,16 @@ public class TicketFragment extends Fragment implements AbsListView.OnItemClickL
         }
     }
 
-    private class TicketDownload extends AsyncTask<Void, Void, ArrayList<Ticket>> {
+    private class TicketDownload extends AsyncTask<Void, Void, Void> {
 
         @Override
-        protected ArrayList<Ticket> doInBackground(Void... params) {
-            NetworkConnector connector = new NetworkConnector();
-            ArrayList<Ticket> tickets = null;
-
+        protected Void doInBackground(Void... params) {
             try {
-                tickets = connector.fetchJson("http://10.0.2.2:3000/lineups/");
+                mAdapter.fetch();
             } catch (Exception e) {
                 cancel(true);
             }
-
-            return tickets;
+            return null;
         }
 
         @Override
@@ -158,8 +153,7 @@ public class TicketFragment extends Fragment implements AbsListView.OnItemClickL
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Ticket> tickets) {
-            mAdapter = new TicketAdapter(getActivity(), R.layout.fragment_ticket_list, tickets);
+        protected void onPostExecute(Void v) {
             notifyDataChanged();
         }
 

@@ -4,16 +4,12 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 
 /**
  * To use this class, needs two permissions in AndroidManifest file for networking.
@@ -31,36 +27,23 @@ public class NetworkConnector {
         return networkInfo != null && networkInfo.isConnected();
     }
 
-    public ArrayList<Ticket> fetchJson(String urlText) throws MalformedURLException, IOException, NetworkConnectorException, JSONException {
+    public static String fetchJsonText(String urlText) throws IOException, NetworkConnectorException {
 
         HttpURLConnection conn = connect(urlText);
 
         if (isResponseOkay(conn)) {
-            String jsonText = readJson(conn);
-            return parseJsonTextToTicketList(jsonText);
+            return fetchJsonTextFromServer(conn);
         } else {
             throw new NetworkConnectorException();
         }
+
     }
 
-    private ArrayList<Ticket> parseJsonTextToTicketList(String jsonText) throws JSONException {
-        JSONArray jsonArray = new JSONArray(jsonText);
-
-        ArrayList<Ticket> ticketArray = new ArrayList<Ticket>();
-
-        for (int i = 0; i < jsonArray.length(); i++) {
-            Ticket newTicket = Ticket.instanceOf(jsonArray.getJSONObject(i));
-            ticketArray.add(newTicket);
-        }
-
-        return ticketArray;
-    }
-
-    private boolean isResponseOkay(HttpURLConnection conn) throws IOException {
+    private static boolean isResponseOkay(HttpURLConnection conn) throws IOException {
         return conn.getResponseCode() == 200;
     }
 
-    private String readJson(HttpURLConnection conn) throws IOException {
+    private static String fetchJsonTextFromServer(HttpURLConnection conn) throws IOException {
         InputStream inputStream = null;
         StringBuilder builder = new StringBuilder();
 
@@ -80,7 +63,7 @@ public class NetworkConnector {
         return builder.toString();
     }
 
-    private HttpURLConnection connect(String urlText) throws MalformedURLException, IOException {
+    private static HttpURLConnection connect(String urlText) throws MalformedURLException, IOException {
         URL url = new URL(urlText);
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -95,7 +78,7 @@ public class NetworkConnector {
         return conn;
     }
 
-    class NetworkConnectorException extends Exception {
+    public static class NetworkConnectorException extends Exception {
 
     }
 }

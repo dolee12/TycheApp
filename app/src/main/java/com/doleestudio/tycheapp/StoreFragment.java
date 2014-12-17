@@ -2,15 +2,15 @@ package com.doleestudio.tycheapp;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.doleestudio.tycheapp.dummy.DummyContent;
 
@@ -25,14 +25,11 @@ import com.doleestudio.tycheapp.dummy.DummyContent;
  */
 public class StoreFragment extends Fragment implements AbsListView.OnItemClickListener {
 
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String STORE_QUERY = "query";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String query;
 
     private OnFragmentInteractionListener mListener;
 
@@ -45,7 +42,7 @@ public class StoreFragment extends Fragment implements AbsListView.OnItemClickLi
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private ListAdapter mAdapter;
+    private StoreAdapter mAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -54,12 +51,10 @@ public class StoreFragment extends Fragment implements AbsListView.OnItemClickLi
     public StoreFragment() {
     }
 
-    // TODO: Rename and change types of parameters
-    public static StoreFragment newInstance(String param1, String param2) {
+    public static StoreFragment newInstance(String query) {
         StoreFragment fragment = new StoreFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(STORE_QUERY, query);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,13 +64,11 @@ public class StoreFragment extends Fragment implements AbsListView.OnItemClickLi
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            query = getArguments().getString(STORE_QUERY);
         }
 
-        // TODO: Change Adapter to display your content
-        mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS);
+        mAdapter = new StoreAdapter(getActivity(), android.R.layout.simple_list_item_1);
+        new Downloader().execute();
     }
 
     @Override
@@ -85,7 +78,7 @@ public class StoreFragment extends Fragment implements AbsListView.OnItemClickLi
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
-        ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
+        mListView.setAdapter(mAdapter);
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
@@ -130,6 +123,47 @@ public class StoreFragment extends Fragment implements AbsListView.OnItemClickLi
 
         if (emptyView instanceof TextView) {
             ((TextView) emptyView).setText(emptyText);
+        }
+    }
+
+    private class Downloader extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                mAdapter.fetch(query);
+            } catch (Exception e) {
+                cancel(true);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            if (!NetworkConnector.isConnected(getActivity())) {
+                showErrorToast("네트워크에 연결되지 않았습니다. 네트워크에 연결해 주십시오.");
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+            notifyDataChanged();
+        }
+
+        @Override
+        protected void onCancelled() {
+            showErrorToast("서버에 이상이 발생했습니다. 앱을 다시 실행해 주시고 그래도 이상이 있을 경우엔 회사 고객지원 센터에 연락주시기 바랍니다.");
+        }
+
+        private void notifyDataChanged() {
+            mListView.setAdapter(mAdapter);
+        }
+
+        private void showErrorToast(String msg) {
+            int duration = Toast.LENGTH_LONG;
+
+            Toast toast = Toast.makeText(getActivity(), msg, duration);
+            toast.show();
         }
     }
 }
