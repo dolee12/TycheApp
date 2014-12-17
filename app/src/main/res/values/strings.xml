@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">TycheApp</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">Tyche</string>
+    <string name="action_search">Search</string>
     <string name="action_settings">Settings</string>
+    <string name="search_hint">Search Store</string>
+    <string name="title_activity_store">Store List</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>

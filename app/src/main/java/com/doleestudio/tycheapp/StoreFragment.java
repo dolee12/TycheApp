@@ -2,20 +2,17 @@ package com.doleestudio.tycheapp;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.doleestudio.tycheapp.dummy.DummyContent;
-
-import java.util.ArrayList;
 
 /**
  * A fragment representing a list of Items.
@@ -26,7 +23,7 @@ import java.util.ArrayList;
  * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
-public class TicketFragment extends Fragment implements AbsListView.OnItemClickListener {
+public class StoreFragment extends Fragment implements AbsListView.OnItemClickListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -54,12 +51,12 @@ public class TicketFragment extends Fragment implements AbsListView.OnItemClickL
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public TicketFragment() {
+    public StoreFragment() {
     }
 
     // TODO: Rename and change types of parameters
-    public static TicketFragment newInstance(String param1, String param2) {
-        TicketFragment fragment = new TicketFragment();
+    public static StoreFragment newInstance(String param1, String param2) {
+        StoreFragment fragment = new StoreFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -76,13 +73,15 @@ public class TicketFragment extends Fragment implements AbsListView.OnItemClickL
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        new TicketDownload().execute();
+        // TODO: Change Adapter to display your content
+        mAdapter = new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
+                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_ticket, container, false);
+        View view = inflater.inflate(R.layout.fragment_store, container, false);
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
@@ -131,52 +130,6 @@ public class TicketFragment extends Fragment implements AbsListView.OnItemClickL
 
         if (emptyView instanceof TextView) {
             ((TextView) emptyView).setText(emptyText);
-        }
-    }
-
-    private class TicketDownload extends AsyncTask<Void, Void, ArrayList<Ticket>> {
-
-        @Override
-        protected ArrayList<Ticket> doInBackground(Void... params) {
-            NetworkConnector connector = new NetworkConnector();
-            ArrayList<Ticket> tickets = null;
-
-            try {
-                tickets = connector.fetchJson("http://10.0.2.2:3000/lineups/");
-            } catch (Exception e) {
-                cancel(true);
-            }
-
-            return tickets;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            if (!NetworkConnector.isConnected(getActivity())) {
-                showErrorToast("네트워크에 연결되지 않았습니다. 네트워크에 연결해 주십시오.");
-            }
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Ticket> tickets) {
-            mAdapter = new TicketAdapter(getActivity(), R.layout.fragment_ticket_list, tickets);
-            notifyDataChanged();
-        }
-
-        @Override
-        protected void onCancelled() {
-            showErrorToast("서버에 이상이 발생했습니다. 앱을 다시 실행해 주시고 그래도 이상이 있을 경우엔 회사 고객지원 센터에 연락주시기 바랍니다.");
-        }
-
-        private void notifyDataChanged() {
-            mListView.setAdapter(mAdapter);
-        }
-
-        private void showErrorToast(String msg) {
-            int duration = Toast.LENGTH_LONG;
-
-            Toast toast = Toast.makeText(getActivity(), msg, duration);
-            toast.show();
         }
     }
 }
