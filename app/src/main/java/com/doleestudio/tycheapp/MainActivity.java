@@ -3,6 +3,7 @@ package com.doleestudio.tycheapp;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,15 +52,17 @@ public class MainActivity extends Activity implements OnFragmentInteractionListe
 
         if (id == R.id.action_settings) {
             return true;
-        }
-        /*
-        else if (id == R.id.action_search) {
-            openStoreFragment();
+        } else if (id == R.id.action_store) {
+            openStoreActivity();
             return true;
         }
-        */
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openStoreActivity() {
+        Intent intent = new Intent(Intent.ACTION_SEARCH, null, this, StoreActivity.class);
+        startActivity(intent);
     }
 
     private void openTicketFragment() {

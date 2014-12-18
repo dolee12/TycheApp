@@ -29,10 +29,14 @@ public class StoreList extends ArrayList<Store> {
     }
 
     private String makeEncodedURL(String query) {
+        String encodedUrl = URL;
 
-        String encodedQuery = EncodeToUTF8(query);
+        if (query != null) {
+            String encodedQueryString = EncodeToUTF8(query);
+            encodedUrl += encodedQueryString;
+        }
 
-        return URL + encodedQuery;
+        return encodedUrl;
     }
 
     private String EncodeToUTF8(String query) {
