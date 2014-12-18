@@ -1,5 +1,7 @@
 package com.doleestudio.tycheapp;
 
+import android.net.Uri;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,13 +13,12 @@ import java.util.ArrayList;
  * Created by dolee@outlook.com on 14. 12. 17..
  */
 public class StoreList extends ArrayList<Store> {
-    private static final String URL = "http://10.0.2.2:3000/stores.json?";
+    private static final String URL = "http://10.0.2.2:3000/stores.json?name=";
 
     public final void fetch(String query) throws JSONException, IOException, NetworkConnector.NetworkConnectorException {
 
-        // String queryURL = URL + "?name=" + query;
-        String queryURL = URL + "?name=김";
-        String jsonText = NetworkConnector.fetchJsonText(URL);
+        String queryURL = makeEncodedURL(query);
+        String jsonText = NetworkConnector.fetchJsonText(queryURL);
 
         JSONArray jsonArray;
         jsonArray = parseJsonArray(jsonText);
@@ -25,6 +26,18 @@ public class StoreList extends ArrayList<Store> {
         for (int i = 0; i < jsonArray.length(); i++) {
             parseJsonToAddStore(jsonArray, i);
         }
+    }
+
+    private String makeEncodedURL(String query) {
+
+        String encodedQuery = EncodeToUTF8(query);
+
+        return URL + encodedQuery;
+    }
+
+    private String EncodeToUTF8(String query) {
+
+        return Uri.encode(query, "UTF-8");
     }
 
     private final void parseJsonToAddStore(JSONArray jsonArray, int i) {
