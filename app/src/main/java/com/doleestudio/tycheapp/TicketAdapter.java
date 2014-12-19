@@ -17,7 +17,7 @@ import java.io.IOException;
  * Created by dolee@outlook.com on 14. 12. 15..
  */
 public class TicketAdapter extends ArrayAdapter<Ticket> {
-    private static final String URL = "http://10.0.2.2:3000/lineups/";
+
 
     private final Context context;
 
@@ -29,7 +29,7 @@ public class TicketAdapter extends ArrayAdapter<Ticket> {
     }
 
     public void fetch() throws JSONException, IOException, NetworkConnector.NetworkConnectorException {
-        String jsonText = NetworkConnector.fetchJsonText(URL);
+        String jsonText = NetworkConnector.fetchTicketList();
 
         JSONArray jsonArray = parseJsonArray(jsonText);
 

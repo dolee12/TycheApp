@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -144,6 +145,7 @@ public class StoreListFragment extends Fragment implements AbsListView.OnItemCli
             try {
                 mAdapter.fetch(query);
             } catch (Exception e) {
+                Log.e("StoreListFragment", e.getMessage());
                 cancel(true);
             }
             return null;

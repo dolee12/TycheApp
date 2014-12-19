@@ -3,6 +3,7 @@ package com.doleestudio.tycheapp;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +19,13 @@ import java.net.URL;
  */
 public class NetworkConnector {
 
+    // This IP (10.0.3.2) is required to get access to localhost from GenyHost
+    private static final String SERVER_URL = "http://10.0.3.2:3000";
+    private static final String TICKET_LIST_URL = SERVER_URL + "/lineups/";
+    private static final String STORE_LIST_URL = SERVER_URL + "/stores.json?name=";
+
     private static final int BUFFER_SIZE = 1024;
+
 
     public static boolean isConnected(Context context) {
         ConnectivityManager connMgr = (ConnectivityManager)
@@ -76,6 +83,34 @@ public class NetworkConnector {
         conn.connect();
 
         return conn;
+    }
+
+    public static String fetchTicketList() throws IOException, NetworkConnectorException {
+        return fetchJsonText(TICKET_LIST_URL);
+    }
+
+    public static String fetchStoreList(String query) throws IOException, NetworkConnectorException {
+
+        String queryURL = makeEncodedURL(STORE_LIST_URL, query);
+        String jsonText = NetworkConnector.fetchJsonText(queryURL);
+
+        return fetchJsonText(STORE_LIST_URL);
+    }
+
+    private static String makeEncodedURL(String url, String query) {
+        String encodedUrl = url;
+
+        if (query != null) {
+            String encodedQueryString = EncodeToUTF8(query);
+            encodedUrl += encodedQueryString;
+        }
+
+        return encodedUrl;
+    }
+
+    private static String EncodeToUTF8(String query) {
+
+        return Uri.encode(query, "UTF-8");
     }
 
     public static class NetworkConnectorException extends Exception {

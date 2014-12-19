@@ -17,10 +17,10 @@ public class StoreActivity extends Activity {
         setContentView(R.layout.activity_store);
 
         store = getIntent().getParcelableExtra(STORE_TAG);
+
         TextView tv = (TextView) findViewById(R.id.store_name);
         tv.setText(store.getName());
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
