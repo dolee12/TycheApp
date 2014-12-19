@@ -2,6 +2,7 @@ package com.doleestudio.tycheapp;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,7 +24,7 @@ import com.doleestudio.tycheapp.dummy.DummyContent;
  * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
-public class StoreFragment extends Fragment implements AbsListView.OnItemClickListener {
+public class StoreListFragment extends Fragment implements AbsListView.OnItemClickListener {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String STORE_QUERY = "query";
@@ -48,11 +49,11 @@ public class StoreFragment extends Fragment implements AbsListView.OnItemClickLi
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public StoreFragment() {
+    public StoreListFragment() {
     }
 
-    public static StoreFragment newInstance(String query) {
-        StoreFragment fragment = new StoreFragment();
+    public static StoreListFragment newInstance(String query) {
+        StoreListFragment fragment = new StoreListFragment();
         Bundle args = new Bundle();
         args.putString(STORE_QUERY, query);
         fragment.setArguments(args);
@@ -107,10 +108,20 @@ public class StoreFragment extends Fragment implements AbsListView.OnItemClickLi
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (null != mListener) {
+            Store store = mAdapter.getItem(position);
+
+            openStoreActivity(store);
+
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
             mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
         }
+    }
+
+    private void openStoreActivity(Store store) {
+        Intent intent = new Intent(getActivity(), StoreActivity.class);
+        intent.putExtra(StoreActivity.STORE_TAG, store);
+        startActivity(intent);
     }
 
     /**

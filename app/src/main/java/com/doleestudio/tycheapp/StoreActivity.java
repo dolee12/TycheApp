@@ -1,56 +1,24 @@
 package com.doleestudio.tycheapp;
 
 import android.app.Activity;
-import android.app.FragmentTransaction;
-import android.app.SearchManager;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 
-public class StoreActivity extends Activity implements OnFragmentInteractionListener {
-    private String query;
+public class StoreActivity extends Activity {
+    public static final String STORE_TAG = "storeTag";
+    private Store store;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_store);
 
-        Intent intent = getIntent();
-        handleSearchIntent(intent);
-
-        if (savedInstanceState == null) {
-            openStoreFragment();
-        }
-    }
-
-    private void handleSearchIntent(Intent intent) {
-
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            query = intent.getStringExtra(SearchManager.QUERY);
-        }
-    }
-
-    private void openStoreFragment() {
-        StoreFragment storeFragment = StoreFragment.newInstance(query);
-
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-        // Replace whatever is in the fragment_container view with this fragment,
-        // and add the transaction to the back stack
-        transaction.replace(R.id.store_container, storeFragment);
-        transaction.addToBackStack(null);
-
-        // Commit the transaction
-        transaction.commit();
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        handleSearchIntent(intent);
+        store = getIntent().getParcelableExtra(STORE_TAG);
+        TextView tv = (TextView) findViewById(R.id.store_name);
+        tv.setText(store.getName());
     }
 
 
@@ -74,10 +42,5 @@ public class StoreActivity extends Activity implements OnFragmentInteractionList
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onFragmentInteraction(String id) {
-
     }
 }

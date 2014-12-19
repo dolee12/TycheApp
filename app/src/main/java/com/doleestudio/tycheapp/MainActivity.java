@@ -61,7 +61,7 @@ public class MainActivity extends Activity implements OnFragmentInteractionListe
     }
 
     private void openStoreActivity() {
-        Intent intent = new Intent(Intent.ACTION_SEARCH, null, this, StoreActivity.class);
+        Intent intent = new Intent(Intent.ACTION_SEARCH, null, this, StoreListActivity.class);
         startActivity(intent);
     }
 

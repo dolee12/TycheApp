@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -15,8 +17,8 @@ import java.io.IOException;
  * Created by dolee@outlook.com on 14. 12. 15..
  */
 public class TicketAdapter extends ArrayAdapter<Ticket> {
+    private static final String URL = "http://10.0.2.2:3000/lineups/";
 
-    private final TicketList tickets;
     private final Context context;
 
 
@@ -24,16 +26,31 @@ public class TicketAdapter extends ArrayAdapter<Ticket> {
         super(context, resource);
 
         this.context = context;
-        this.tickets = new TicketList();
     }
 
     public void fetch() throws JSONException, IOException, NetworkConnector.NetworkConnectorException {
-        tickets.fetch();
+        String jsonText = NetworkConnector.fetchJsonText(URL);
+
+        JSONArray jsonArray = parseJsonArray(jsonText);
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            parseJsonToAddTicket(jsonArray, i);
+        }
     }
 
-    @Override
-    public int getCount() {
-        return tickets.size();
+    private void parseJsonToAddTicket(JSONArray jsonArray, int i) {
+        try {
+            JSONObject jsonObj = jsonArray.getJSONObject(i);
+
+            Ticket ticket = new Ticket(jsonObj);
+            this.add(ticket);
+        } catch (JSONException e) {
+            // skip even if error happens
+        }
+    }
+
+    private final JSONArray parseJsonArray(String jsonText) throws JSONException {
+        return new JSONArray(jsonText);
     }
 
     @Override
@@ -46,7 +63,7 @@ public class TicketAdapter extends ArrayAdapter<Ticket> {
         TextView tvWaitCount = (TextView) ticketView.findViewById(R.id.ticket_waitCount);
         TextView tvRegTime = (TextView) ticketView.findViewById(R.id.ticket_regTime);
 
-        Ticket ticket = (Ticket) tickets.get(position);
+        Ticket ticket = (Ticket) getItem(position);
 
         tvShopName.setText(ticket.getStoreName());
         tvNumber.setText(ticket.getStringNumber());
