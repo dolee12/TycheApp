@@ -1,10 +1,14 @@
 package com.doleestudio.tycheapp;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class StoreActivity extends Activity {
@@ -16,10 +20,37 @@ public class StoreActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_store);
 
-        store = getIntent().getParcelableExtra(STORE_TAG);
+        getStoreInParam();
 
-        TextView tv = (TextView) findViewById(R.id.store_name);
-        tv.setText(store.getName());
+        initializeUIComponentsWithStore();
+
+        setGetNumButtonEventHandler();
+    }
+
+    private void setGetNumButtonEventHandler() {
+        Button btnGetNum = (Button) findViewById(R.id.btnGetNum);
+
+        btnGetNum.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                createNewTicket();
+            }
+
+        });
+    }
+
+    private void createNewTicket() {
+        new NewTicketBackground().execute();
+    }
+
+    private void initializeUIComponentsWithStore() {
+        TextView tvStoreName = (TextView) findViewById(R.id.store_name);
+        TextView tvCategory = (TextView) findViewById(R.id.store_category);
+        TextView tvAddress = (TextView) findViewById(R.id.store_addr);
+        TextView tvTel = (TextView) findViewById(R.id.store_tel);
+        tvStoreName.setText(store.getName());
+        tvCategory.setText(store.getCategory());
+        tvAddress.setText(store.getAddress());
+        tvTel.setText(store.getTel());
     }
 
     @Override
@@ -42,5 +73,53 @@ public class StoreActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void getStoreInParam() {
+        store = getIntent().getParcelableExtra(STORE_TAG);
+    }
+
+    private void setNewTicketNumTextBox(String newTicketNum) {
+        TextView tvNewTicketNum = (TextView) findViewById(R.id.new_ticket_num);
+        tvNewTicketNum.setText(newTicketNum);
+    }
+
+    private void showErrorToast(String msg) {
+        int duration = Toast.LENGTH_LONG;
+
+        Toast toast = Toast.makeText(this, msg, duration);
+        toast.show();
+    }
+
+    class NewTicketBackground extends AsyncTask<Void, Void, Ticket> {
+        String msg = null;
+
+
+        @Override
+        protected Ticket doInBackground(Void... params) {
+            Ticket ticket = null;
+            String userId = "1";
+            try {
+                ticket = Ticket.CreateInstance(store.getId(), userId);
+            } catch (Exception e) {
+                msg = e.getMessage();
+                cancel(true);
+            }
+
+            return ticket;
+        }
+
+        @Override
+        protected void onCancelled() {
+            showErrorToast(msg);
+        }
+
+        @Override
+        protected void onPostExecute(Ticket ticket) {
+            if (ticket == null)
+                return;
+
+            setNewTicketNumTextBox(ticket.getTicketNumber());
+        }
     }
 }

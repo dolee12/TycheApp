@@ -26,15 +26,15 @@ public class Store implements Parcelable {
     private static final String JSON_STORE_NAME = "name";
     private static final String JSON_STORE_CATEGORY = "category";
     private static final String JSON_STORE_TEL = "tel";
-    private static final String JSON_STORE_ADDR = "addr";
+    private static final String JSON_STORE_ADDRESS = "addr";
     private static final String JSON_STORE_LOCATION = "location";
     private static final String JSON_STORE_NUMBER = "cnt";
     private static final String JSON_STORE_WAIT_COUNT = "wait";
-    private int id;
+    private String id;
     private String name;
     private String category;
     private String tel;
-    private String addr;
+    private String address;
     private String location;
     private String currentNumber;
     private String waitCount;
@@ -48,11 +48,11 @@ public class Store implements Parcelable {
 
         parcel.readStringArray(data);
 
-        id = Integer.parseInt(data[0]);
+        id = data[0];
         name = data[1];
         category = data[2];
         tel = data[3];
-        addr = data[4];
+        address = data[4];
         location = data[5];
         currentNumber = data[6];
         waitCount = data[7];
@@ -66,17 +66,17 @@ public class Store implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeStringArray(new String[]{
-                String.valueOf(id),
+                id,
                 name,
                 category,
                 tel,
-                addr,
+                address,
                 location,
                 currentNumber,
                 waitCount});
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -92,8 +92,8 @@ public class Store implements Parcelable {
         return tel;
     }
 
-    public String getAddr() {
-        return addr;
+    public String getAddress() {
+        return address;
     }
 
     public String getLocation() {
@@ -110,16 +110,37 @@ public class Store implements Parcelable {
 
     private void initializeFromJson(JSONObject jsonObj) {
         try {
-            id = jsonObj.getInt(JSON_STORE_ID);
+            id = jsonObj.getString(JSON_STORE_ID);
             name = jsonObj.getString(JSON_STORE_NAME);
             category = jsonObj.getString(JSON_STORE_CATEGORY);
             tel = jsonObj.getString(JSON_STORE_TEL);
-            addr = jsonObj.getString(JSON_STORE_ADDR);
+            address = jsonObj.getString(JSON_STORE_ADDRESS);
             location = jsonObj.getString(JSON_STORE_LOCATION);
             currentNumber = jsonObj.getString(JSON_STORE_NUMBER);
             waitCount = jsonObj.getString(JSON_STORE_WAIT_COUNT);
         } catch (JSONException je) {
 
         }
+    }
+
+    public void getNewTicket() {
+        String jsonNewForm = createNewTicketForm();
+
+        if (jsonNewForm == null) return;
+
+
+    }
+
+    private String createNewTicketForm() {
+        JSONObject jsonObj = new JSONObject();
+
+        try {
+            jsonObj.put("store_id", id);
+            jsonObj.put("user_id", 1);
+        } catch (JSONException je) {
+
+        }
+
+        return jsonObj.toString();
     }
 }

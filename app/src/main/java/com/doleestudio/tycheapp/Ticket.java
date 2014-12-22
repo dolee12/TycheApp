@@ -1,5 +1,7 @@
 package com.doleestudio.tycheapp;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -7,9 +9,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- *
- */
 public class Ticket {
     private static final String STORE_ID = "store_id";
     private static final String STORE_NAME = "store_name";
@@ -18,25 +17,60 @@ public class Ticket {
     private static final String REG_TIME = "reg_time";
     private static final String UTC_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
-    private long storeId;
+    private String storeId;
     private String storeName;
-    private long number;
-    private long waitOrder;
-    private Date regTime;
+    private String ticketNumber;
+    private String waitNumber;
+    private String creationTime;
 
     public Ticket(JSONObject jsonObj) {
         initializeFromJson(jsonObj);
     }
 
+    ;
+
+    public static Ticket CreateInstance(String storeId, String userId) {
+        JSONObject jsonObj = null;
+        try {
+            String jsonText = NetworkConnector.createNewTicket(storeId, userId);
+            jsonObj = new JSONObject(jsonText);
+            return new Ticket(jsonObj);
+        } catch (Exception e) {
+            Log.d("", e.getMessage());
+        }
+
+        return new Ticket(jsonObj);
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public String getTicketNumber() {
+        return ticketNumber;
+    }
+
+    public String getWaitNumber() {
+        return waitNumber;
+    }
+
+    public String getCreationTime() {
+        return creationTime;
+    }
+
     private final void initializeFromJson(JSONObject jsonObj) {
         try {
-            storeId = jsonObj.getLong(Ticket.STORE_ID);
+            storeId = jsonObj.getString(Ticket.STORE_ID);
             storeName = jsonObj.getString(Ticket.STORE_NAME);
-            number = jsonObj.getLong(NUMBER);
-            waitOrder = jsonObj.getLong(WAIT_ORDER);
-            regTime = convertFromJasonDateToDate(jsonObj);
+            ticketNumber = jsonObj.getString(NUMBER);
+            waitNumber = jsonObj.getString(WAIT_ORDER);
+            creationTime = jsonObj.getString(REG_TIME);
         } catch (Exception e) {
-
+            Log.d("", e.getMessage());
         }
     }
 
@@ -45,41 +79,5 @@ public class Ticket {
 
         String jsonDateText = jsonObj.getString(REG_TIME);
         return formatter.parse(jsonDateText);
-    }
-
-    public long getStoreId() {
-        return storeId;
-    }
-
-    public String getStringStoreId() {
-        return String.valueOf(storeId);
-    }
-
-    public String getStoreName() {
-        return storeName;
-    }
-
-    public long getNumber() {
-        return number;
-    }
-
-    public String getStringNumber() {
-        return String.valueOf(number);
-    }
-
-    public long getWaitOrder() {
-        return waitOrder;
-    }
-
-    public String getStringWaitOrder() {
-        return String.valueOf(waitOrder);
-    }
-
-    public Date getRegTime() {
-        return regTime;
-    }
-
-    public String getStringRegTime() {
-        return regTime.toString();
     }
 }

@@ -14,8 +14,6 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.doleestudio.tycheapp.dummy.DummyContent;
-
 /**
  * A fragment representing a list of Items.
  * <p/>
@@ -115,7 +113,7 @@ public class StoreListFragment extends Fragment implements AbsListView.OnItemCli
 
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
+            // mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
         }
     }
 

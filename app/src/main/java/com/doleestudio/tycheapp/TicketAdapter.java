@@ -1,6 +1,7 @@
 package com.doleestudio.tycheapp;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,18 +35,20 @@ public class TicketAdapter extends ArrayAdapter<Ticket> {
         JSONArray jsonArray = parseJsonArray(jsonText);
 
         for (int i = 0; i < jsonArray.length(); i++) {
-            parseJsonToAddTicket(jsonArray, i);
+            parseJsonToAdd(jsonArray, i);
         }
     }
 
-    private void parseJsonToAddTicket(JSONArray jsonArray, int i) {
+    private void parseJsonToAdd(JSONArray jsonArray, int i) {
         try {
             JSONObject jsonObj = jsonArray.getJSONObject(i);
 
             Ticket ticket = new Ticket(jsonObj);
-            this.add(ticket);
+
+            add(ticket);
+
         } catch (JSONException e) {
-            // skip even if error happens
+            Log.e("", e.getMessage());
         }
     }
 
@@ -61,14 +64,14 @@ public class TicketAdapter extends ArrayAdapter<Ticket> {
         TextView tvShopName = (TextView) ticketView.findViewById(R.id.store_shopName);
         TextView tvNumber = (TextView) ticketView.findViewById(R.id.ticket_number);
         TextView tvWaitCount = (TextView) ticketView.findViewById(R.id.ticket_waitCount);
-        TextView tvRegTime = (TextView) ticketView.findViewById(R.id.ticket_regTime);
+        TextView tvCreationTime = (TextView) ticketView.findViewById(R.id.ticket_regTime);
 
         Ticket ticket = (Ticket) getItem(position);
 
         tvShopName.setText(ticket.getStoreName());
-        tvNumber.setText(ticket.getStringNumber());
-        tvWaitCount.setText(ticket.getStringWaitOrder());
-        tvRegTime.setText(ticket.getStringRegTime());
+        tvNumber.setText(ticket.getTicketNumber());
+        tvWaitCount.setText(ticket.getWaitNumber());
+        tvCreationTime.setText(ticket.getCreationTime());
 
         return ticketView;
     }
